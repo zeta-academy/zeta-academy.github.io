@@ -160,19 +160,19 @@
               <div class="row">
                 <div class="col-md-12">
                   <fieldset>
-                    <input name="name" type="text" class="form-control" id="name" placeholder="Ваше Имя" required="">
+                    <input name="name" type="text" class="form-control" id="name" placeholder="Ваше Имя" required
+                      minlength="3" maxlength="40">
                   </fieldset>
                 </div>
                 <div class="col-md-12">
                   <fieldset>
-                    <input name="email" type="text" class="form-control" id="email" placeholder="Ваша Почта"
-                      required="">
+                    <input name="email" type="email" class="form-control" id="email" placeholder="Ваша Почта" required>
                   </fieldset>
                 </div>
                 <div class="col-md-12">
                   <fieldset>
                     <input name="phone-number" type="text" class="form-control" id="phone-number"
-                      placeholder="Ваш номер (WhatsApp)" required="">
+                      placeholder="Ваш номер (WhatsApp)" required minlength="8" maxlength="16">
                   </fieldset>
                 </div>
                 <div class="col-md-12">
@@ -340,31 +340,45 @@
   </script>
 
   <script>
+    let canSendForm = true
     const __form = document.getElementById('contact')
     __form.addEventListener('submit', event => {
       event.preventDefault()
+      if (canSendForm) {
 
-      const __bookingButton = document.getElementById('form-submit')
-      const __name = document.getElementById('name')
-      const __email = document.getElementById('email')
-      const __phoneNumber = document.getElementById('phone-number')
+        // const __bookingButton = document.getElementById('form-submit')
+        const __name = document.getElementById('name')
+        const __email = document.getElementById('email')
+        const __phoneNumber = document.getElementById('phone-number')
 
-      fetch('https://zeta-academy.herokuapp.com/booking', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          accept: 'application/json'
-        },
-        body: JSON.stringify({
-          name: __name.value,
-          email: __email.value,
-          whatsapp: __phoneNumber.value
+        fetch('https://zeta-academy.herokuapp.com/booking', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Access-Control-Allow-Credentials': true
+          },
+          body: JSON.stringify({
+            name: __name.value,
+            email: __email.value,
+            whatsapp: __phoneNumber.value
+          })
+
+        }).then((response) => response.text()).then((responseText) => {
+          if (responseText == '200') {
+            canSendForm = false;
+            alert('Ваша заявка была успешно отправлена')
+            __form.reset()
+          }
+          else {
+            alert('Произошла ошибка при отправления вашей заявки, вы можете написать напрямую через WhatsApp по номеру +77788145482')
+          }
         })
+      }
+      else {
+        alert('Вы уже отправили заявку, ждите ответа от менеджера')
+      }
 
-      }).then((response) => response.text()).then((responseText) => console.log(responseText))
-
-      __form.reset()
-      alert('Successfully sent')
 
     })
 
